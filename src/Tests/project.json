@@ -1,0 +1,22 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.0"
+    },
+    "NUnit": "3.4.1",
+    "dotnet-test-nunit": "3.3.0",
+    "FluentAssertions": "4.12.0",
+    "CSProjToXProj": "*"
+  },
+  "testRunner": "nunit",
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": [
+        "portable-net45+win8"
+      ]
+    }
+  }
+}
