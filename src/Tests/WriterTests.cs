@@ -18,7 +18,7 @@ namespace Tests
             var metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new []{ "MyLib" });
             new Writer(fs).WriteXProj(xprojFile, metadata);
 
-            fs[xprojFile].Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
+            fs[xprojFile].NormalizeLineEndings().Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
     <VisualStudioVersion Condition=""'$(VisualStudioVersion)' == ''"">14.0</VisualStudioVersion>
@@ -35,7 +35,7 @@ namespace Tests
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <Import Project=""$(VSToolsPath)\DotNet\Microsoft.DotNet.targets"" Condition=""'$(VSToolsPath)' != ''"" />
-</Project>");
+</Project>".NormalizeLineEndings());
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace Tests
             var metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new[] { "MyLib" });
             new Writer(fs).WriteProjectJson(@"x:\path", metadata, packages);
 
-            fs[@"x:\path\project.json"].Should().Be(@"{
+            fs[@"x:\path\project.json"].NormalizeLineEndings().Should().Be(@"{
   ""version"": ""1.0.0-*"",
 
   ""dependencies"": {
@@ -59,7 +59,7 @@ namespace Tests
     ""net451"": {
     }
   },
-}");
+}".NormalizeLineEndings());
         }
     }
 }
