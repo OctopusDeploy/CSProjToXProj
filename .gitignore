@@ -37,3 +37,4 @@ packages/
 *.received.*
 Publish/
 project.lock.json
+/tools/
