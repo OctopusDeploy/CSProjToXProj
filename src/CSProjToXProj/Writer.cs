@@ -56,7 +56,7 @@ namespace CSProjToXProj
   ""frameworks"": {
     """+ framework + @""": {
     }
-  },
+  }
 }";
 
             _fileSystem.WriteAllText(Path.Combine(directory, "project.json"), json);

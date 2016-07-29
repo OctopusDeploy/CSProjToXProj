@@ -58,7 +58,7 @@ namespace Tests
   ""frameworks"": {
     ""net451"": {
     }
-  },
+  }
 }".NormalizeLineEndings());
         }
     }
