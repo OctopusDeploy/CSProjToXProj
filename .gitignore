@@ -38,3 +38,4 @@ packages/
 Publish/
 project.lock.json
 /tools/
+/artifacts/

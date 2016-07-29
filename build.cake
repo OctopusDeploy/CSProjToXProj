@@ -15,7 +15,8 @@ var configuration = Argument("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 var artifactsDir = "./artifacts";
 var globalAssemblyFile = "./src/GlobalAssemblyInfo.cs";
-var projectToPackage = "./src/DotNetCoreBuild";
+var projectToPackage = "./src/CSProjToXProj";
+var directoryToZip = $"{projectToPackage}/bin/{configuration}/netcoreapp1.0/win7-x64";
 
 var isContinuousIntegrationBuild = !BuildSystem.IsLocalBuild;
 
@@ -48,8 +49,8 @@ Task("__Default")
     .IsDependentOn("__UpdateAssemblyVersionInformation")
     .IsDependentOn("__Build")
     .IsDependentOn("__Test")
-    .IsDependentOn("__UpdateProjectJsonVersion");
-    //.IsDependentOn("__Pack")
+    .IsDependentOn("__UpdateProjectJsonVersion")
+    .IsDependentOn("__Zip");
 
 Task("__Clean")
     .Does(() =>
@@ -111,18 +112,13 @@ Task("__UpdateProjectJsonVersion")
     });
 });
 
-/*
-Task("__Pack")
+
+Task("__Zip")
     .Does(() =>
 {
-    DotNetCorePack(projectToPackage, new DotNetCorePackSettings
-    {
-        Configuration = configuration,
-        OutputDirectory = artifactsDir,
-        NoBuild = true
-    });
+    Zip(directoryToZip, $"{artifactsDir}/CSProjToXProj.zip", $"{directoryToZip}/**/*");
 });
-*/
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
