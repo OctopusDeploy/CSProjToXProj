@@ -34,12 +34,12 @@ namespace Tests.Plumbing
 
         public string[] ReadAllLines(string path)
         {
-            return this[path].Split(new[] {"\r\n"}, StringSplitOptions.None);
+            return this[path].Split(new[] {Environment.NewLine}, StringSplitOptions.None);
         }
 
         public void WriteAllLines(string path, IEnumerable<string> lines)
         {
-            this[path] = string.Join("\r\n", lines);
+            this[path] = string.Join(Environment.NewLine, lines);
         }
     }
 }

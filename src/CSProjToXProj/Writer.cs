@@ -44,7 +44,7 @@ namespace CSProjToXProj
         {
             var allPackages = packages.Concat(projectMetaData.ProjectReferences.Select(r => new PackageEntry(r, "*")));
 
-            var packagesJson = string.Join($",\r\n", allPackages.Select(p => $@"    ""{p.Id}"": ""{p.Version}"""));
+            var packagesJson = string.Join($",{Environment.NewLine}", allPackages.Select(p => $@"    ""{p.Id}"": ""{p.Version}"""));
             var framework = "net" + projectMetaData.TargetFrameworkVersion.Replace("v", "").Replace(".", "");
             var json = @"{
   ""version"": ""1.0.0-*"",
