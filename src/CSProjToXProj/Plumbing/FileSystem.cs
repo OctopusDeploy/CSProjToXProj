@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace CSProjToXProj.Plumbing
 {
@@ -9,6 +10,8 @@ namespace CSProjToXProj.Plumbing
         bool Exists(string path);
         void WriteAllText(string path, string contents);
         void Delete(string path);
+        string[] ReadAllLines(string path);
+        void WriteAllLines(string path, IEnumerable<string> lines);
     }
 
     public class FileSystem : IFileSystem
@@ -31,6 +34,16 @@ namespace CSProjToXProj.Plumbing
         public void Delete(string path)
         {
             File.Delete(path);
+        }
+
+        public string[] ReadAllLines(string path)
+        {
+            return File.ReadAllLines(path);
+        }
+
+        public void WriteAllLines(string path, IEnumerable<string> lines)
+        {
+            File.WriteAllLines(path, lines);
         }
     }
 

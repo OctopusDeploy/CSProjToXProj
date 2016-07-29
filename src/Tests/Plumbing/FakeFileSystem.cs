@@ -31,5 +31,15 @@ namespace Tests.Plumbing
         {
             this.Remove(path);
         }
+
+        public string[] ReadAllLines(string path)
+        {
+            return this[path].Split(new[] {"\r\n"}, StringSplitOptions.None);
+        }
+
+        public void WriteAllLines(string path, IEnumerable<string> lines)
+        {
+            this[path] = string.Join("\r\n", lines);
+        }
     }
 }

@@ -16,10 +16,8 @@ namespace CSProjToXProj
             _fileSystem = fileSystem;
         }
 
-        public void WriteXProj(string csprojPath, ProjectMetadata projectMetaData)
+        public void WriteXProj(string xprojPath, ProjectMetadata projectMetaData)
         {
-            var xprojPath = Path.ChangeExtension(csprojPath, "xproj");
-
             var contents = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>

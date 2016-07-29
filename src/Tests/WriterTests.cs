@@ -12,11 +12,13 @@ namespace Tests
         [Test]
         public void XProjIsWrittenCorrectly()
         {
+            const string xprojFile = @"x:\path\myproj.xproj";
+
             var fs = new FakeFileSystem();
             var metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new []{ "MyLib" });
-            new Writer(fs).WriteXProj(@"x:\path\myproj.csproj", metadata);
+            new Writer(fs).WriteXProj(xprojFile, metadata);
 
-            fs[@"x:\path\myproj.xproj"].Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
+            fs[xprojFile].Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
     <VisualStudioVersion Condition=""'$(VisualStudioVersion)' == ''"">14.0</VisualStudioVersion>
