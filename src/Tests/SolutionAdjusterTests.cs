@@ -88,12 +88,12 @@ EndGlobal
             var guid = Guid.Parse("84AA132C-5097-4F1B-9161-6B91D06ADB9C");
             var fs = new FakeFileSystem
             {
-                { slnFile, Before}
+                { slnFile, Before.NormalizeLineEndings()}
             };
 
             new SolutionAdjuster(fs).Adjust(slnFile, guid);
 
-            fs[slnFile].Should().Be(After);
+            fs[slnFile].NormalizeLineEndings().Should().Be(After.NormalizeLineEndings());
         }
 
 
