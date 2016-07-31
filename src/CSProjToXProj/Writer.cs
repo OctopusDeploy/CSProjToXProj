@@ -4,6 +4,8 @@ using System.IO;
 using CSProjToXProj.Plumbing;
 using System.Linq;
 using CSProjToXProj.SourceFiles;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CSProjToXProj
 {
@@ -40,25 +42,36 @@ namespace CSProjToXProj
             _fileSystem.WriteAllText(xprojPath, contents);
         }
 
-        public void WriteProjectJson(string directory, ProjectMetadata projectMetaData, IReadOnlyList<PackageEntry> packages)
+        public void WriteProjectJson(string directory, ProjectMetadata projectMetadata, IReadOnlyList<PackageEntry> packages)
         {
-            var allPackages = packages.Concat(projectMetaData.ProjectReferences.Select(r => new PackageEntry(r, "*")));
+            var doc = new JObject
+            {
+                ["version"] = "0.0.0-*",
+                ["dependencies"] = new JObject()
+            };
 
-            var packagesJson = string.Join($",{Environment.NewLine}", allPackages.Select(p => $@"    ""{p.Id}"": ""{p.Version}"""));
-            var framework = "net" + projectMetaData.TargetFrameworkVersion.Replace("v", "").Replace(".", "");
-            var json = @"{
-  ""version"": ""1.0.0-*"",
+            foreach (var package in packages)
+                doc["dependencies"][package.Id] = package.Version;
+            foreach (var reference in projectMetadata.ProjectReferences)
+                doc["dependencies"][reference] = "*";
 
-  ""dependencies"": {
-" + packagesJson + @"
-  },
+            var framework = "net" + projectMetadata.TargetFrameworkVersion.Replace("v", "").Replace(".", "");
+            var frameworkElement = new JObject();
+            doc["frameworks"] = new JObject { [framework] = frameworkElement };
 
-  ""frameworks"": {
-    """+ framework + @""": {
-    }
-  }
-}";
+            if (projectMetadata.FrameworkReferences.Any())
+            {
+                frameworkElement["frameworkAssemblies"] = new JObject();
+                foreach (var reference in projectMetadata.FrameworkReferences)
+                    frameworkElement["frameworkAssemblies"][reference] = "*";
+            }
 
+            if (projectMetadata.OutputType.Equals("Exe", StringComparison.CurrentCultureIgnoreCase))
+            {
+                doc["buildOptions"] = new JObject { ["emitEntryPoint"] = true };
+            }
+
+            var json = JsonConvert.SerializeObject(doc, Formatting.Indented);
             _fileSystem.WriteAllText(Path.Combine(directory, "project.json"), json);
         }
     }

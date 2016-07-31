@@ -9,14 +9,15 @@ namespace Tests
 {
     public class WriterTests
     {
+        private readonly ProjectMetadata _metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new[] { "MyLib" }, new[] { "System.Data" }, "Exe");
+
         [Test]
         public void XProjIsWrittenCorrectly()
         {
             const string xprojFile = @"x:\path\myproj.xproj";
 
             var fs = new FakeFileSystem();
-            var metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new []{ "MyLib" });
-            new Writer(fs).WriteXProj(xprojFile, metadata);
+            new Writer(fs).WriteXProj(xprojFile, _metadata);
 
             fs[xprojFile].NormalizeLineEndings().Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
@@ -43,21 +44,24 @@ namespace Tests
         {
             var fs = new FakeFileSystem();
             var packages = new[] { new PackageEntry("Foo", "3.4.1"), new PackageEntry("Bar", "0.0.1-alpha.2"), };
-            var metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new[] { "MyLib" });
-            new Writer(fs).WriteProjectJson(@"x:\path", metadata, packages);
+            new Writer(fs).WriteProjectJson(@"x:\path", _metadata, packages);
 
             fs[@"x:\path\project.json"].NormalizeLineEndings().Should().Be(@"{
-  ""version"": ""1.0.0-*"",
-
+  ""version"": ""0.0.0-*"",
   ""dependencies"": {
     ""Foo"": ""3.4.1"",
     ""Bar"": ""0.0.1-alpha.2"",
     ""MyLib"": ""*""
   },
-
   ""frameworks"": {
     ""net451"": {
+      ""frameworkAssemblies"": {
+        ""System.Data"": ""*""
+      }
     }
+  },
+  ""buildOptions"": {
+    ""emitEntryPoint"": true
   }
 }".NormalizeLineEndings());
         }

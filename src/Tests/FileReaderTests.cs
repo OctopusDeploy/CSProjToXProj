@@ -33,6 +33,18 @@ namespace Tests
             ExecuteReadCsProj().ProjectReferences.Should().BeEquivalentTo("MyProj.Lib");
         }
 
+        [Test]
+        public void FrameworkReferencesAreRead()
+        {
+            ExecuteReadCsProj().FrameworkReferences.Should().BeEquivalentTo("System.Data");
+        }
+
+        [Test]
+        public void OutputTypeIsRead()
+        {
+            ExecuteReadCsProj().OutputType.Should().BeEquivalentTo("Exe");
+        }
+
         private ProjectMetadata ExecuteReadCsProj()
         {
             var projFileName = @"x:\foo\my.csproj";
@@ -113,6 +125,7 @@ namespace Tests
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include=""System"" />
+    <Reference Include=""System.Data"" />
     <ProjectReference Include=""..\Libs\MyProj.Lib\MyProjLib.csproj"">
       <Project>{FAF9A6DD-C669-4F5B-88AF-8AB2B8F3B7C4}</Project>
       <Name>Lib.Core</Name>

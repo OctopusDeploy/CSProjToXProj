@@ -28,11 +28,19 @@ namespace CSProjToXProj.SourceFiles
                     .Select(p => Path.GetFileName(Path.GetDirectoryName(p)))
                     .ToArray();
 
+                var frameworkReferences = doc.Descendants(XName.Get("Reference", ns))
+                    .Where(r => r.Descendants(XName.Get("HintPath", ns)).None())
+                    .Select(r => r.Attribute("Include").Value)
+                    .Except(new [] {"System"})
+                    .ToArray();
+
                 return new ProjectMetadata(
                     targetFrameworkVersion: doc.Descendants(XName.Get("TargetFrameworkVersion", ns)).FirstOrDefault()?.Value,
                     rootNamespace: doc.Descendants(XName.Get("RootNamespace", ns)).FirstOrDefault()?.Value,
                     guid: Guid.Parse(doc.Descendants(XName.Get("ProjectGuid", ns)).FirstOrDefault()?.Value),
-                    projectReferences: projectReferences
+                    projectReferences: projectReferences,
+                    frameworkReferences: frameworkReferences,
+                    outputType: doc.Descendants(XName.Get("OutputType", ns)).FirstOrDefault()?.Value
                 );
             }
         }
