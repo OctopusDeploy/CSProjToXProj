@@ -34,10 +34,18 @@ namespace CSProjToXProj.SourceFiles
                     .Except(new [] {"System"})
                     .ToArray();
 
+                var projectTypeGuids = doc
+                    .Descendants(XName.Get("ProjectTypeGuids", ns))
+                    .FirstOrDefault()?.Value
+                    .Split(';')
+                    .Select(Guid.Parse)
+                    .ToArray() ?? Array.Empty<Guid>();
+
                 return new ProjectMetadata(
                     targetFrameworkVersion: doc.Descendants(XName.Get("TargetFrameworkVersion", ns)).FirstOrDefault()?.Value,
                     rootNamespace: doc.Descendants(XName.Get("RootNamespace", ns)).FirstOrDefault()?.Value,
                     guid: Guid.Parse(doc.Descendants(XName.Get("ProjectGuid", ns)).FirstOrDefault()?.Value),
+                    projectTypeGuids: projectTypeGuids,
                     projectReferences: projectReferences,
                     frameworkReferences: frameworkReferences,
                     outputType: doc.Descendants(XName.Get("OutputType", ns)).FirstOrDefault()?.Value

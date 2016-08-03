@@ -7,7 +7,7 @@ namespace CSProjToXProj.SourceFiles
     {
 
         public ProjectMetadata(string targetFrameworkVersion, string rootNamespace, Guid guid, string[] projectReferences, string[] frameworkReferences,
-            string outputType)
+            string outputType, params Guid[] projectTypeGuids)
         {
             TargetFrameworkVersion = targetFrameworkVersion;
             RootNamespace = rootNamespace;
@@ -15,6 +15,7 @@ namespace CSProjToXProj.SourceFiles
             ProjectReferences = projectReferences;
             FrameworkReferences = frameworkReferences;
             OutputType = outputType;
+            ProjectTypeGuids = new HashSet<Guid>(projectTypeGuids);
         }
         public string TargetFrameworkVersion { get; }
         public string RootNamespace { get;  }
@@ -22,5 +23,6 @@ namespace CSProjToXProj.SourceFiles
         public IReadOnlyList<string> ProjectReferences { get;  }
         public IReadOnlyList<string> FrameworkReferences { get;  }
         public string OutputType { get;}
+        public ISet<Guid> ProjectTypeGuids { get; }
     }
 }

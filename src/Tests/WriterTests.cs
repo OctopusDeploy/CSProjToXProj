@@ -9,7 +9,7 @@ namespace Tests
 {
     public class WriterTests
     {
-        private readonly ProjectMetadata _metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new[] { "MyLib" }, new[] { "System.Data" }, "Exe");
+        private readonly ProjectMetadata _metadata = new ProjectMetadata("v4.5.1", "MyProject.Namespace", Guid.Parse("50da3bcc-0fbb-4b69-8c7a-077f01fd6e4e"), new[] { "MyLib" }, new[] { "System.Data" }, "Exe", Writer.WebProjectGuid);
 
         [Test]
         public void XProjIsWrittenCorrectly()
@@ -35,7 +35,7 @@ namespace Tests
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
-  <Import Project=""$(VSToolsPath)\DotNet\Microsoft.DotNet.targets"" Condition=""'$(VSToolsPath)' != ''"" />
+  <Import Project=""$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets"" Condition=""'$(VSToolsPath)' != ''"" />
 </Project>".NormalizeLineEndings());
         }
 
