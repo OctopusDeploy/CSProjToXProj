@@ -12,22 +12,34 @@ namespace CSProjToXProj
 {
     public class Program
     {
+        private const string ReplaceExistingOption = "/ReplaceExisting";
+        private const string ForceOption = "/Force";
+
+        private static readonly HashSet<string> AllOptions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ReplaceExistingOption,
+            ForceOption
+        };
+
         public static int Main(string[] args)
         {
-            var deleteOriginal = true;
-            if (args.Length != 1)
+            if (args.Length == 0)
             {
-                var dontDelete = args[1].Equals("/dontdelete", StringComparison.OrdinalIgnoreCase);
-                deleteOriginal = !dontDelete;
-
-                if (args.Length != 2 || !dontDelete)
-                {
-                    Console.WriteLine("Usage: CSProjToXProj <path_to_search> [/DontDelete]");
-                    return 1;
-                }
+                PrintUsage();
+                return 1;
             }
 
             var root = args[0];
+            var flags = new HashSet<string>(args.Skip(1), StringComparer.OrdinalIgnoreCase);
+            if(!flags.All(f => AllOptions.Contains(f)))
+            {
+                PrintUsage();
+                return 1;
+            }
+            var replaceExisting = flags.Contains(ReplaceExistingOption);
+            var force = flags.Contains(ForceOption);
+
+
             if (!Directory.Exists(root))
             {
                 Console.WriteLine($"The directory {root} does not exist");
@@ -36,7 +48,7 @@ namespace CSProjToXProj
 
             try
             {
-                Run(root, deleteOriginal);
+                Run(root, replaceExisting, force);
                 return 0;
             }
             catch (Exception ex)
@@ -47,15 +59,27 @@ namespace CSProjToXProj
             }
         }
 
-        public static void Run(string directory, bool deleteOriginal)
+        private static void PrintUsage()
+        {
+            Console.WriteLine("Usage: CSProjToXProj <path_to_search> [/ReplaceExisting]");
+            Console.WriteLine();
+            Console.WriteLine(
+                "if /ReplaceExisting is specified, the project GUID is retained, the sln file is updated and the csproj and package.config are deleted");
+            Console.WriteLine(
+                "omit this flag if you are intending to have side by side csproj and xproj. You will need to rename either the csproj or xproj and then add the xproj to the solution.");
+            Console.WriteLine();
+            Console.WriteLine("/Force overwrites existing xproj files");
+        }
+
+        public static void Run(string directory, bool replaceExisting, bool force)
         {
             foreach (var csprojPath in Directory.GetFiles(directory, "*.csproj", SearchOption.AllDirectories))
             {
-                RunForCSProjFile(csprojPath, deleteOriginal);
+                RunForCSProjFile(csprojPath, replaceExisting, force);
             }
         }
 
-        private static void RunForCSProjFile(string csprojPath, bool deleteOriginal)
+        private static void RunForCSProjFile(string csprojPath, bool replaceExisting, bool force)
         {
             csprojPath = Path.GetFullPath(csprojPath);
             var fs = new FileSystem();
@@ -64,7 +88,7 @@ namespace CSProjToXProj
             var packagesPath = Path.Combine(directory, "packages.config");
             var xprojPath = Path.ChangeExtension(csprojPath, "xproj");
 
-            if (File.Exists(xprojPath))
+            if (!force && File.Exists(xprojPath))
             {
                 Console.Error.WriteLine($"{xprojPath} exists, skipping {csprojPath}");
                 return;
@@ -78,18 +102,18 @@ namespace CSProjToXProj
 
             var writer = new Writer(fs);
             Console.WriteLine($"Writing xproj to {directory}");
-            writer.WriteXProj(xprojPath, projectMetaData);
+            writer.WriteXProj(xprojPath, projectMetaData, replaceExisting);
             Console.WriteLine($"Writing project.json to {directory}");
             writer.WriteProjectJson(directory, projectMetaData, packages);
 
-            foreach(var slnFile in FindSlnFiles(directory))
+            if (replaceExisting)
             {
-                Console.WriteLine($"Adjusting {slnFile}");
-                new SolutionAdjuster(fs).Adjust(slnFile, projectMetaData.Guid);
-            }
+                foreach (var slnFile in FindSlnFiles(directory))
+                {
+                    Console.WriteLine($"Adjusting {slnFile}");
+                    new SolutionAdjuster(fs).Adjust(slnFile, projectMetaData.Guid);
+                }
 
-            if (deleteOriginal)
-            {
                 Console.WriteLine($"Deleting {csprojPath}");
                 fs.Delete(csprojPath);
                 Console.WriteLine($"Deleting {packagesPath}");
@@ -102,7 +126,7 @@ namespace CSProjToXProj
         {
             var slnFiles = Directory.EnumerateFiles(directory, "*.sln");
 
-            if(Directory.GetDirectoryRoot(directory) == directory)
+            if (Directory.GetDirectoryRoot(directory) == directory)
                 return slnFiles;
 
             return slnFiles.Concat(FindSlnFiles(Path.GetDirectoryName(directory)));

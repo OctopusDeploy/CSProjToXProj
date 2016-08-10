@@ -17,7 +17,7 @@ namespace Tests
             const string xprojFile = @"x:\path\myproj.xproj";
 
             var fs = new FakeFileSystem();
-            new Writer(fs).WriteXProj(xprojFile, _metadata);
+            new Writer(fs).WriteXProj(xprojFile, _metadata, true);
 
             fs[xprojFile].NormalizeLineEndings().Should().Be(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">

@@ -18,8 +18,9 @@ namespace CSProjToXProj
             _fileSystem = fileSystem;
         }
 
-        public void WriteXProj(string xprojPath, ProjectMetadata projectMetaData)
+        public void WriteXProj(string xprojPath, ProjectMetadata projectMetaData, bool replaceExisting)
         {
+            var projectGuid = replaceExisting ? projectMetaData.Guid : Guid.NewGuid();
             var contents = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
@@ -28,7 +29,7 @@ namespace CSProjToXProj
   </PropertyGroup>
   <Import Project=""$(VSToolsPath)\DotNet\Microsoft.DotNet.Props"" Condition=""'$(VSToolsPath)' != ''"" />
   <PropertyGroup Label=""Globals"">
-    <ProjectGuid>{projectMetaData.Guid:D}</ProjectGuid>
+    <ProjectGuid>{projectGuid:D}</ProjectGuid>
     <RootNamespace>{projectMetaData.RootNamespace}</RootNamespace>
     <BaseIntermediateOutputPath Condition=""'$(BaseIntermediateOutputPath)'=='' "">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition=""'$(OutputPath)'=='' "">.\bin\</OutputPath>
