@@ -14,10 +14,17 @@ namespace CSProjToXProj
     {
         public static int Main(string[] args)
         {
+            var deleteOriginal = true;
             if (args.Length != 1)
             {
-                Console.WriteLine("Usage: CSProjToXProj <path_to_search>");
-                return 1;
+                var dontDelete = args[1].Equals("/dontdelete", StringComparison.OrdinalIgnoreCase);
+                deleteOriginal = !dontDelete;
+
+                if (args.Length != 2 || !dontDelete)
+                {
+                    Console.WriteLine("Usage: CSProjToXProj <path_to_search> [/DontDelete]");
+                    return 1;
+                }
             }
 
             var root = args[0];
@@ -29,7 +36,7 @@ namespace CSProjToXProj
 
             try
             {
-                Run(root);
+                Run(root, deleteOriginal);
                 return 0;
             }
             catch (Exception ex)
@@ -40,15 +47,15 @@ namespace CSProjToXProj
             }
         }
 
-        public static void Run(string directory)
+        public static void Run(string directory, bool deleteOriginal)
         {
             foreach (var csprojPath in Directory.GetFiles(directory, "*.csproj", SearchOption.AllDirectories))
             {
-                RunForCSProjFile(csprojPath);
+                RunForCSProjFile(csprojPath, deleteOriginal);
             }
         }
 
-        private static void RunForCSProjFile(string csprojPath)
+        private static void RunForCSProjFile(string csprojPath, bool deleteOriginal)
         {
             csprojPath = Path.GetFullPath(csprojPath);
             var fs = new FileSystem();
@@ -81,11 +88,14 @@ namespace CSProjToXProj
                 new SolutionAdjuster(fs).Adjust(slnFile, projectMetaData.Guid);
             }
 
-            Console.WriteLine($"Deleting {csprojPath}");
-            fs.Delete(csprojPath);
-            Console.WriteLine($"Deleting {packagesPath}");
-            fs.Delete(packagesPath);
-            Console.WriteLine();
+            if (deleteOriginal)
+            {
+                Console.WriteLine($"Deleting {csprojPath}");
+                fs.Delete(csprojPath);
+                Console.WriteLine($"Deleting {packagesPath}");
+                fs.Delete(packagesPath);
+                Console.WriteLine();
+            }
         }
 
         private static IEnumerable<string> FindSlnFiles(string directory)
