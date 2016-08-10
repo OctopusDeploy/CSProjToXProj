@@ -40,6 +40,12 @@ namespace Tests
         }
 
         [Test]
+        public void EmbeddedResourcesAreRead()
+        {
+            ExecuteReadCsProj().EmbeddedResources.Should().BeEquivalentTo("resources\\myresource.html");
+        }
+
+        [Test]
         public void OutputTypeIsRead()
         {
             ExecuteReadCsProj().OutputType.Should().BeEquivalentTo("Exe");
@@ -145,6 +151,9 @@ namespace Tests
   <ItemGroup>
     <None Include=""app.config"" />
     <None Include=""packages.config"" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include=""resources\myresource.html"" />
   </ItemGroup>
   <Import Project=""$(MSBuildBinPath)\Microsoft.CSharp.targets"" />
   <Import Project=""$(SolutionDir)\.nuget\nuget.targets"" />
