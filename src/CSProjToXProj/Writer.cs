@@ -11,6 +11,8 @@ namespace CSProjToXProj
 {
     public class Writer
     {
+        public static readonly Guid WebProjectGuid = Guid.Parse("349C5851-65DF-11DA-9384-00065B846F21");
+
         private readonly IFileSystem _fileSystem;
 
         public Writer(IFileSystem fileSystem)
@@ -21,6 +23,10 @@ namespace CSProjToXProj
         public void WriteXProj(string xprojPath, ProjectMetadata projectMetaData, bool replaceExisting)
         {
             var projectGuid = replaceExisting ? projectMetaData.Guid : Guid.NewGuid();
+            var targetsFilePath = projectMetaData.ProjectTypeGuids.Contains(WebProjectGuid)
+                ? "DotNet.Web\\Microsoft.DotNet.Web.targets"
+                : "DotNet\\Microsoft.DotNet.targets";
+
             var contents = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""14.0"" DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <PropertyGroup>
@@ -37,7 +43,7 @@ namespace CSProjToXProj
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
-  <Import Project=""$(VSToolsPath)\DotNet\Microsoft.DotNet.targets"" Condition=""'$(VSToolsPath)' != ''"" />
+  <Import Project=""$(VSToolsPath)\{targetsFilePath}"" Condition=""'$(VSToolsPath)' != ''"" />
 </Project>";
 
             _fileSystem.WriteAllText(xprojPath, contents);
