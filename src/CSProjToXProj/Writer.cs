@@ -72,6 +72,19 @@ namespace CSProjToXProj
                 doc["buildOptions"] = new JObject { ["emitEntryPoint"] = true };
             }
 
+            if (projectMetadata.EmbeddedResources.Any())
+            {
+                if (doc["buildOptions"] == null)
+                {
+                    doc["buildOptions"] = new JObject();
+                }
+                var buildOptions = doc["buildOptions"];
+                buildOptions["embed"] = new JObject
+                {
+                    ["include"] = new JArray(projectMetadata.EmbeddedResources.ToArray())
+                };
+            }
+
             var json = JsonConvert.SerializeObject(doc, Formatting.Indented);
             _fileSystem.WriteAllText(Path.Combine(directory, "project.json"), json);
         }
