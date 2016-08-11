@@ -34,6 +34,13 @@ namespace CSProjToXProj.SourceFiles
                     .Except(new [] {"System"})
                     .ToArray();
 
+                var projectTypeGuids = doc
+                    .Descendants(XName.Get("ProjectTypeGuids", ns))
+                    .FirstOrDefault()?.Value
+                    .Split(';')
+                    .Select(Guid.Parse)
+                    .ToArray() ?? Array.Empty<Guid>();
+					
                 var resources = doc.Descendants(XName.Get("EmbeddedResource", ns))
                     .Select(r => r.Attribute("Include").Value)
                     .Select(path => path.Replace(" ", "%20")) //doesn't like spaces in the name. Possibly related to https://github.com/dotnet/roslyn/issues/4021?
@@ -43,6 +50,7 @@ namespace CSProjToXProj.SourceFiles
                     targetFrameworkVersion: doc.Descendants(XName.Get("TargetFrameworkVersion", ns)).FirstOrDefault()?.Value,
                     rootNamespace: doc.Descendants(XName.Get("RootNamespace", ns)).FirstOrDefault()?.Value,
                     guid: Guid.Parse(doc.Descendants(XName.Get("ProjectGuid", ns)).FirstOrDefault()?.Value),
+                    projectTypeGuids: projectTypeGuids,
                     projectReferences: projectReferences,
                     frameworkReferences: frameworkReferences,
                     embeddedResources: resources,
