@@ -61,7 +61,7 @@ namespace CSProjToXProj
 
         private static void PrintUsage()
         {
-            Console.WriteLine("Usage: CSProjToXProj <path_to_search> [/ReplaceExisting]");
+            Console.WriteLine("Usage: CSProjToXProj <path_to_search> [/ReplaceExisting] [/Force]");
             Console.WriteLine();
             Console.WriteLine(
                 "if /ReplaceExisting is specified, the project GUID is retained, the sln file is updated and the csproj and package.config are deleted");
