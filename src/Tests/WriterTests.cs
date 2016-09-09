@@ -59,7 +59,9 @@ namespace Tests
   ""dependencies"": {
     ""Foo"": ""3.4.1"",
     ""Bar"": ""0.0.1-alpha.2"",
-    ""MyLib"": ""*""
+    ""MyLib"": {
+      ""target"": ""project""
+    }
   },
   ""frameworks"": {
     ""net451"": {

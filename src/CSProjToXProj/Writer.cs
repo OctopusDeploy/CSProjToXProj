@@ -60,7 +60,7 @@ namespace CSProjToXProj
             foreach (var package in packages)
                 doc["dependencies"][package.Id] = package.Version;
             foreach (var reference in projectMetadata.ProjectReferences)
-                doc["dependencies"][reference] = "*";
+                doc["dependencies"][reference] = new JObject() { ["target"] = "project" };
 
             var framework = "net" + projectMetadata.TargetFrameworkVersion.Replace("v", "").Replace(".", "");
             var frameworkElement = new JObject();
