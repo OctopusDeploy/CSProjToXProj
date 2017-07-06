@@ -1,6 +1,0 @@
-version: '{build}'
-build_script:
-- cmd: build.cmd
-test: off
-artifacts:
-- path: artifacts\**\*.*
